@@ -243,8 +243,8 @@ class Boletos(QDialog):
                     self.total_parcial = self.total_parcial + 1
 
             if self.cargar_mas_boletos():
-                    self.set_boletos()
-                    return
+                self.set_boletos()
+                return
 
             if self.verificar_fin():
                 queries.datos_concierto(1, self.puerta1, self.puerta2, self.puerta3, self.personas_totales, self.personas_rechazadas, self.boletos_duplicados)
