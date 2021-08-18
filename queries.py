@@ -135,7 +135,6 @@ def login(correo_elec_empleado, password_empleado):
             sql = f"SELECT id_empleado FROM empleados WHERE correo_elec_empleado='{correo_elec_empleado}' AND password_empleado='{password_empleado}'"
             cursor.execute(sql)
             res = cursor.fetchone()
-            print('aqui', res[0])
             return res[0] if res else False
             
     except:
