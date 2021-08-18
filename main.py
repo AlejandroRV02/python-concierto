@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.uic import loadUi
 import queries
-import helpers
 import time
 import math
 
