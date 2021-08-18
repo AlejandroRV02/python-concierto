@@ -193,16 +193,11 @@ class Boletos(QDialog):
 
     def cargar_mas_boletos(self):
         if self.n_a_verificar == self.total_parcial and self.n_a_verificar != 0:
-            print(self.total_parcial)
-            print(self.n_a_verificar)
             self.boletos = queries.get_boletos(1)
             self.boletos2 = queries.get_boletos(2)
             self.boletos3 = queries.get_boletos(3)
             self.n_a_verificar = self.set_n_a_verificar()
             self.total_parcial = 0
-            print(self.total_parcial)
-            print(self.n_a_verificar)
-            
 
             return True
         
@@ -216,7 +211,6 @@ class Boletos(QDialog):
             n = n + len(self.boletos2)
         if self.boletos3:
             n = n + len(self.boletos3)
-        print(n)
         return n
 
     def aceptar_boleto(self, id_boleto, id_usuario, btnAceptar, btnRechazar, n_puerta):
@@ -263,7 +257,6 @@ class Boletos(QDialog):
     def rechazar_boleto(self, btnRechazar, btnAceptar,id_usuario):
         def foo():
             if queries.set_cliente_verificado(id_usuario):
-                print('Rechazado', id_usuario)
                 self.personas_rechazadas = self.personas_rechazadas + 1
                 self.lcdNRechazados.display(self.personas_rechazadas)
                 self.progreso = self.progreso + self.avance
@@ -273,8 +266,8 @@ class Boletos(QDialog):
                 btnAceptar.setDisabled(True)
 
                 if self.cargar_mas_boletos():
-                        self.set_boletos()
-                        return
+                    self.set_boletos()
+                    return
 
                 if self.verificar_fin():
                     queries.datos_concierto(1, self.puerta1, self.puerta2, self.puerta3, self.personas_totales, self.personas_rechazadas, self.boletos_duplicados)
@@ -390,6 +383,14 @@ class Boletos(QDialog):
     def cerrar_puertas(self, btnCerrarPuertas):
         def cerrar():            
             btnCerrarPuertas.setDisabled(True)
+            self.label_3.setText('')
+            self.lblAceptar_P1.setText('')
+            self.lblRechazar_P1.setText('')
+            self.label.setText('')
+            self.lblAceptar_P3.setText('')
+            self.lblRechazar_P3.setText('')
+            self.n_a_verificar = self.set_n_a_verificar()
+            self.label_2.setText('Boletos')
             self.reset(self.lbls_boletos_P1, self.btnsAceptar_P1, self.btnsRechazar_P1)
             self.reset(self.lbls_boletos_P2, self.btnsAceptar_P2, self.btnsRechazar_P2)
             self.reset(self.lbls_boletos_P3, self.btnsAceptar_P3, self.btnsRechazar_P3)
