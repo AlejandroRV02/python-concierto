@@ -1295,7 +1295,7 @@
     <string>Progreso</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pbCerrarPuertas">
    <property name="geometry">
     <rect>
      <x>1140</x>

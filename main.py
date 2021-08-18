@@ -143,6 +143,7 @@ class Boletos(QDialog):
         #self.confirpass.setEchoMode(QtWidgets.QLineEdit.Password)
         #self.lblBoleto1_P1.setText('hola')
         self.pbCerrarSesion.clicked.connect(self.logout)
+        self.pbCerrarPuertas.clicked.connect(self.cerrar_puertas(self.pbCerrarPuertas))
         self.nombre_concierto = queries.get_concierto(1)
         self.nombre_empleado = queries.get_nombre_empleado(self.id_empleado)
         self.lblNombreEmpleado.setText('Empleado: ' + self.nombre_empleado)
@@ -223,7 +224,7 @@ class Boletos(QDialog):
         def ret_id_boleto():
             ingresado = queries.verificar_ingreso(id_boleto)
             if not ingresado:
-                if helpers.ingresar(id_usuario):
+                if queries.set_cliente_verificado(id_usuario):
                     if n_puerta == 1:
                         self.puerta1 = self.puerta1 + 1
                         self.lcdNPuerta1.display(self.puerta1)
@@ -241,12 +242,12 @@ class Boletos(QDialog):
                 self.progreso = self.progreso + self.avance
                 self.progressBar.setValue(self.progreso)
             else:
-                helpers.ingresar(id_usuario)
-                self.boletos_duplicados = self.boletos_duplicados + 1
-                self.lcdNDuplicados.display(self.boletos_duplicados)
-                self.progreso = self.progreso + self.avance
-                self.progressBar.setValue(self.progreso)
-                self.total_parcial = self.total_parcial + 1
+                if queries.set_cliente_verificado(id_usuario):
+                    self.boletos_duplicados = self.boletos_duplicados + 1
+                    self.lcdNDuplicados.display(self.boletos_duplicados)
+                    self.progreso = self.progreso + self.avance
+                    self.progressBar.setValue(self.progreso)
+                    self.total_parcial = self.total_parcial + 1
 
             if self.cargar_mas_boletos():
                     self.set_boletos()
@@ -262,23 +263,23 @@ class Boletos(QDialog):
 
     def rechazar_boleto(self, btnRechazar, btnAceptar,id_usuario):
         def foo():
-            helpers.ingresar(id_usuario)
-            print('Rechazado')
-            self.personas_rechazadas = self.personas_rechazadas + 1
-            self.lcdNRechazados.display(self.personas_rechazadas)
-            self.progreso = self.progreso + self.avance
-            self.progressBar.setValue(self.progreso)
-            self.total_parcial = self.total_parcial + 1
-            btnRechazar.setDisabled(True)
-            btnAceptar.setDisabled(True)
+            if queries.set_cliente_verificado(id_usuario):
+                print('Rechazado', id_usuario)
+                self.personas_rechazadas = self.personas_rechazadas + 1
+                self.lcdNRechazados.display(self.personas_rechazadas)
+                self.progreso = self.progreso + self.avance
+                self.progressBar.setValue(self.progreso)
+                self.total_parcial = self.total_parcial + 1
+                btnRechazar.setDisabled(True)
+                btnAceptar.setDisabled(True)
 
-            if self.cargar_mas_boletos():
-                    self.set_boletos()
+                if self.cargar_mas_boletos():
+                        self.set_boletos()
+                        return
+
+                if self.verificar_fin():
+                    queries.datos_concierto(1, self.puerta1, self.puerta2, self.puerta3, self.personas_totales, self.personas_rechazadas, self.boletos_duplicados)
                     return
-
-            if self.verificar_fin():
-                queries.datos_concierto(1, self.puerta1, self.puerta2, self.puerta3, self.personas_totales, self.personas_rechazadas, self.boletos_duplicados)
-                return
         return foo
 
     def verificar_fin(self):
@@ -371,61 +372,6 @@ class Boletos(QDialog):
                 self.llenar_vacio(max_boletos, self.lbls_boletos_P3, self.btnsAceptar_P3 ,self.btnsRechazar_P3)
         else:
             self.llenar_vacio(0, self.lbls_boletos_P3, self.btnsAceptar_P3 ,self.btnsRechazar_P3)
-
-        '''
-        for lbl_boleto in self.lbls_boletos_P1:
-            lbl_boleto.setText('Fecha de compra: ' + str(self.boletos[i]['fecha_hora_compra_boleto']) + '\nCliente: ' + self.boletos[i]['nombre_usuario'] + ' ' + self.boletos[i]['apellido_p_usuario'] + ' ' + self.boletos[i]['apellido_m_usuario'] + '\nTipo: ' + self.boletos[i]['nombre_tipo_cliente'])
-            self.id_usuarios_P1.append(self.boletos[i]['id_usuario'])
-            self.id_boletos_P1.append(self.boletos[i]['id_boleto'])
-            i = i + 1
-        
-
-        j = 0
-        for pbAceptar in self.btnsAceptar_P1:
-            pbAceptar.clicked.connect(self.aceptar_boleto(self.id_boletos_P1[j], self.id_usuarios_P1[j], pbAceptar, self.btnsRechazar_P1[j], 1))
-            j = j + 1
- 
-        k = 0
-        for pbRechazar in self.btnsRechazar_P1:
-            pbRechazar.clicked.connect(self.rechazar_boleto(self.btnsRechazar_P1[k], self.btnsAceptar_P1[k], self.id_usuarios_P1[k]))
-            k = k + 1
-  
-        #PUERTA 2
-        l = 0
-        for lbl_boleto2 in self.lbls_boletos_P2:
-            lbl_boleto2.setText('Fecha de compra: ' + str(self.boletos2[l]['fecha_hora_compra_boleto']) + '\nCliente: ' + self.boletos2[l]['nombre_usuario'] + ' ' + self.boletos2[l]['apellido_p_usuario'] + ' ' + self.boletos2[l]['apellido_m_usuario'] + '\nTipo: ' + self.boletos2[l]['nombre_tipo_cliente'])
-            self.id_usuarios_P2.append(self.boletos2[l]['id_usuario'])
-            self.id_boletos_P2.append(self.boletos2[l]['id_boleto'])
-            l = l + 1
-
-        m = 0
-        for pbAceptar in self.btnsAceptar_P2:
-            pbAceptar.clicked.connect(self.aceptar_boleto(self.id_boletos_P2[m], self.id_usuarios_P2[m], pbAceptar, self.btnsRechazar_P2[m], 2))
-            m = m + 1
-
-        n = 0
-        for pbRechazar in self.btnsRechazar_P2:
-            pbRechazar.clicked.connect(self.rechazar_boleto(self.btnsRechazar_P2[n], self.btnsAceptar_P2[n], self.id_usuarios_P2[n]))
-            n = n + 1
-
-        #PUERTA 3
-        o = 0
-        for lbl_boleto3 in self.lbls_boletos_P3:
-            lbl_boleto3.setText('Fecha de compra: ' + str(self.boletos3[o]['fecha_hora_compra_boleto']) + '\nCliente: ' + self.boletos3[o]['nombre_usuario'] + ' ' + self.boletos3[o]['apellido_p_usuario'] + ' ' + self.boletos3[o]['apellido_m_usuario'] + '\nTipo: ' + self.boletos3[o]['nombre_tipo_cliente'])
-            self.id_usuarios_P3.append(self.boletos3[o]['id_usuario'])
-            self.id_boletos_P3.append(self.boletos3[o]['id_boleto'])
-            o = o + 1
-
-        p = 0
-        for pbAceptar in self.btnsAceptar_P3:
-            pbAceptar.clicked.connect(self.aceptar_boleto(self.id_boletos_P3[p], self.id_usuarios_P3[p], pbAceptar, self.btnsRechazar_P3[p], 3))
-            p = p + 1
-
-        q = 0
-        for pbRechazar in self.btnsRechazar_P3:
-            pbRechazar.clicked.connect(self.rechazar_boleto(self.btnsRechazar_P3[q], self.btnsAceptar_P3[q], self.id_usuarios_P3[q]))
-            q = q + 1
-              '''
         
     def llenar_vacio(self, max_boletos, labels, btnsAceptar, btnsRechazar):
         for i in range(max_boletos,10):
@@ -441,7 +387,19 @@ class Boletos(QDialog):
             labels[i].setText('')
             btnsAceptar[i].clicked.connect(self.x)
             btnsRechazar[i].clicked.connect(self.x)
-        
+
+    def cerrar_puertas(self, btnCerrarPuertas):
+        def cerrar():            
+            btnCerrarPuertas.setDisabled(True)
+            self.reset(self.lbls_boletos_P1, self.btnsAceptar_P1, self.btnsRechazar_P1)
+            self.reset(self.lbls_boletos_P2, self.btnsAceptar_P2, self.btnsRechazar_P2)
+            self.reset(self.lbls_boletos_P3, self.btnsAceptar_P3, self.btnsRechazar_P3)
+            self.boletos = []
+            self.boletos3 = []
+            self.boletos2 = queries.get_boletos_puerta_cerrada()
+            self.set_boletos()
+        return cerrar
+
     def x(self):
         pass
 

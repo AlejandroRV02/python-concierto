@@ -157,7 +157,7 @@ def datos_concierto(id_concierto, n_aceptados_p1, n_aceptados_p2, n_aceptados_p3
 def get_boletos_puerta_cerrada():
     try:
         with conn.cursor() as cursor:
-            sql = f"SELECT b.id_boleto, b.fecha_hora_compra_boleto, b.id_usuario, u.nombre_usuario, u.apellido_p_usuario, u.apellido_m_usuario, u.id_tipo_cliente, tc.nombre_tipo_cliente FROM boletos b, usuarios u, tipos_clientes tc WHERE b.id_usuario=u.id_usuario AND u.id_tipo_cliente=tc.id_tipo_cliente AND b.id_concierto=1 AND b.verificado_boleto=0 ORDER BY tc.nombre_tipo_cliente DESC"
+            sql = f"SELECT b.id_boleto, b.fecha_hora_compra_boleto, b.id_usuario, u.nombre_usuario, u.apellido_p_usuario, u.apellido_m_usuario, u.id_tipo_cliente, tc.nombre_tipo_cliente FROM boletos b, usuarios u, tipos_clientes tc WHERE b.id_usuario=u.id_usuario AND u.id_tipo_cliente=tc.id_tipo_cliente AND b.id_concierto=1 AND b.verificado_boleto=0 ORDER BY tc.nombre_tipo_cliente DESC LIMIT 10"
             cursor.execute(sql)
             res = cursor.fetchall()
 
