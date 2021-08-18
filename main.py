@@ -67,6 +67,7 @@ class Nuevo_Empleado(QDialog):
 
         if nombre == '' or apellido_p == '' or apellido_m == '' or email == '' or password == '' or password2 == '':
             QMessageBox.information(self, "Información", "Debe llenar todos los campos", QMessageBox.Ok)
+            return
 
         if password == password2:
 
