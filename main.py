@@ -236,6 +236,7 @@ class Boletos(QDialog):
                 self.progreso = self.progreso + self.avance
                 self.progressBar.setValue(self.progreso)
             else:
+                QMessageBox.information(self, "Información", "El boleto ya ha sido registrado", QMessageBox.Ok)
                 if queries.set_cliente_verificado(id_usuario):
                     self.boletos_duplicados = self.boletos_duplicados + 1
                     self.lcdNDuplicados.display(self.boletos_duplicados)
@@ -285,6 +286,8 @@ class Boletos(QDialog):
 
     def logout(self):
         disponible = queries.set_empleado_disponible(self.id_empleado)
+        queries.datos_concierto(1, self.puerta1, self.puerta2, self.puerta3, self.personas_totales, self.personas_rechazadas, self.boletos_duplicados)
+       
         
         if disponible:
             login=Login()
